@@ -1,4 +1,4 @@
-package fi.haagahelia.Tim_motors.domain;
+package fi.haagahelia.tim_motors.domain;
 
 import java.util.List;
 

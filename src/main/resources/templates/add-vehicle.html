@@ -43,16 +43,16 @@
 
             <div class="mb-3">
                 <label for="price" class="form-label">Price</label>
-                <input type="text" id="price" th:field="*{price}" class="form-control" required>
+                <input type="number" id="price" th:field="*{price}" class="form-control" required>
             </div>
 
             <div class="mb-3">
                 <label for="image" class="form-label">Choose Image</label>
-                <input type="file" id="image" th:field="*{url}" accept="image/*" class="form-control" required>
+                <input type="file" id="image" name="imageFile" accept="image/*" class="form-control" required>
             </div>
 
             <button type="submit" class="btn btn-lg btn-primary">Add Vehicle</button>
-            <a href="/index.html" class="btn btn-lg btn-danger">Cancel</a>
+            <a href="/" class="btn btn-lg btn-danger">Cancel</a>
         </form>
     </div>
 </body>
