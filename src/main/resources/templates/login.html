@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Tim Motors / Log-In</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" 
+        href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" 
+        />
+    <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css"
+    />
+<style>
+    body {
+        background-color: aliceblue;
+    }
+    .container {
+        background-color: white;
+        padding: 30px;
+        padding-bottom: 60px;
+        width: 30%;
+        margin-top: 80px !important;
+        color: #242424;
+    }
+    h2 {
+        text-align: center;
+    }
+    a:hover {
+        text-decoration: none;
+    }
+    .create-account {
+        margin-right: 40px;
+        text-align: right;
+        display: inline;
+        float: right;
+        margin-top: 18px;
+    }
+    .reset-password {
+        text-align: right;
+        display: block !important;
+    }
+    button {
+        margin-top: 10px;
+        float: right;
+        display: inline;
+        
+    }
+
+</style>
+</head>
+<body>
+    <div class="container mt-3">
+        <h2>Sign in</h2>
+        <div th:if="${param.error}" class="alert alert-danger mt-3">
+            <strong>Error:</strong> Invalid username or password.
+        </div>
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="username" class="form-control" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
+            </div>
+            <a href="/reset-password" class="reset-password">Reset password</a>
+            <button type="submit" class="btn btn-primary">Login</button><a href="/create-account" class="create-account">create account</a>
+        </form>
+      </div>
+</body>
+</html>

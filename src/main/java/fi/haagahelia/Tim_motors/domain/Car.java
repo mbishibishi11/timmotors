@@ -1,11 +1,16 @@
 package fi.haagahelia.tim_motors.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -18,15 +23,18 @@ public class Car {
 
     private String brand;
     private String model;
-    private String ManufactureYear;
+    private String manufactureYear;
     private String mileage;
     private String fuel;
     private String transmission;
     private Double price;
     private String url;
 
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SavedCar> savedByUsers = new ArrayList<>();
+
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private AppUser appUser;
 
     public long getId() {
@@ -54,11 +62,11 @@ public class Car {
     }
 
     public String getManufactureYear() {
-        return ManufactureYear;
+        return manufactureYear;
     }
 
     public void setManufactureYear(String manufactureYear) {
-        ManufactureYear = manufactureYear;
+        this.manufactureYear = manufactureYear;
     }
 
     public String getMileage() {
@@ -99,6 +107,14 @@ public class Car {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public List<SavedCar> getSavedByUsers() {
+        return savedByUsers;
+    }
+
+    public void setSavedByUsers(List<SavedCar> savedByUsers) {
+        this.savedByUsers = savedByUsers;
     }
 
     public AppUser getAppUser() {

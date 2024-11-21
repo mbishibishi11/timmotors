@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Tim Motors / Log-In</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" 
+        href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" 
+        />
+    <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css"
+    />
+<style>
+    body {
+        background-color: aliceblue;
+    }
+    .container {
+        background-color: white;
+        padding: 30px;
+        padding-bottom: 80px;
+        width: 30%;
+        margin-top: 80px !important;
+        color: #242424;
+    }
+    h2 {
+        text-align: center;
+        border-top: 20px !important;
+    }
+    a:hover {
+        text-decoration: none;
+    }
+    .mb-3 {
+        border-left: 20px;
+        border-right: 20px;
+    }
+    .sing-in {
+        margin-right: 40px;
+        text-align: right;
+        display: inline;
+        float: right;
+        margin-top: 18px;
+    }
+    button {
+        margin-top: 10px;
+        float: right;
+        display: inline;
+        
+    }
+
+</style>
+</head>
+<body>
+    <div class="container mt-3">
+        <h2>Sign up</h2>
+        <form th:action="@{/add-user}" th:object="${appUser}" method="post">
+          <div class="mb-3">
+            <label for="email">First name:</label>
+            <input type="text" class="form-control" id="firstName" th:field="*{firstName}" placeholder="Enter first name" required />
+          </div>
+          <div class="mb-3">
+            <label for="email">Last name:</label>
+            <input type="text" class="form-control" id="lastName" th:field="*{lastName}" placeholder="Enter last name" required />
+          </div>
+          <div class="mb-3">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="Enter email" required />
+          </div>
+          <div th:if="${#fields.hasErrors('email')}" class="text-danger">
+            <span th:errors="*{email}"></span>
+        </div>
+          <div class="mb-3">
+            <label for="pwd">Password:</label>
+            <input type="password" class="form-control" id="password" th:field="*{password}" placeholder="Enter password"required />
+          </div>
+  
+          <button type="submit" class="btn btn-primary">Sign up</button><a href="/login" class="sing-in">Sign in</span></a>
+        </form>
+      </div>
+</body>
+</html>
