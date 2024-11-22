@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import fi.haagahelia.tim_motors.AppUserDetails;
 import fi.haagahelia.tim_motors.domain.AppUser;
 import fi.haagahelia.tim_motors.domain.Car;
+import fi.haagahelia.tim_motors.repository.AppUserRepository;
 import fi.haagahelia.tim_motors.repository.CarRepository;
 import fi.haagahelia.tim_motors.service.CarService;
 
@@ -28,6 +30,9 @@ public class CarController {
 
     @Autowired
     private CarRepository carRepository;
+
+    @Autowired
+    private AppUserRepository appUserRepository;
 
     // Show the new vehicle form
     @GetMapping("/add-vehicle")
@@ -65,14 +70,30 @@ public class CarController {
     }
 
     @GetMapping("/cars")
-    public String listVehicles(Model model, @AuthenticationPrincipal AppUserDetails userDetails) {
-        if (userDetails == null) {
-            throw new IllegalStateException(""); ////////////////// Add error page here
+    public String listVehicles(Model model, @AuthenticationPrincipal AppUserDetails userDetails,
+            OAuth2AuthenticationToken oAuth2Token) {
+
+        AppUser appUser;
+
+        if (userDetails != null) {
+            appUser = userDetails.getAppUser();
+        }
+        // Handle Google login
+        else if (oAuth2Token != null) {
+            String email = oAuth2Token.getPrincipal().getAttribute("email");
+            appUser = appUserRepository.findByEmail(email)
+                    .orElseThrow(() -> new IllegalStateException("User not found: " + email));
+        }
+        // Else redirect to login
+        else {
+            return "redirect:/login";
         }
 
+        // Add user and cars to the model
         List<Car> cars = carRepository.findAll();
         model.addAttribute("cars", cars);
-        model.addAttribute("appUser", userDetails.getAppUser());
+        model.addAttribute("appUser", appUser);
+
         return "cars";
     }
 
@@ -85,11 +106,21 @@ public class CarController {
 
     @GetMapping("/cars/vehicle/{id}")
     public String vehicleDetails(@PathVariable Long id, Model model,
-            @AuthenticationPrincipal AppUserDetails userDetails) {
+            @AuthenticationPrincipal AppUserDetails userDetails, OAuth2AuthenticationToken oAuth2Token) {
+
+        AppUser appUser;
+        // Retrieve user details
+        if (userDetails != null) {
+            appUser = userDetails.getAppUser();
+        }
+        String email = oAuth2Token.getPrincipal().getAttribute("email");
+        appUser = appUserRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("User not found: " + email));
+        // Retrieve car info
         Car car = carRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Car not found with ID: " + id));
         model.addAttribute("car", car);
-        model.addAttribute("appUser", userDetails.getAppUser());
+        model.addAttribute("appUser", appUser);
         return "vehicle";
     }
 

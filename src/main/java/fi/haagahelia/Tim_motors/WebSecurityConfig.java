@@ -40,6 +40,10 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
+                .oauth2Login(oauth2 -> {
+                    oauth2.loginPage("/login").permitAll();
+                    oauth2.defaultSuccessUrl("/google-user", true);
+                })
 
                 .formLogin(httpForm -> {
                     httpForm
@@ -49,7 +53,8 @@ public class WebSecurityConfig {
                 })
 
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/create-account", "/static/**", "/add-user", "/resources/**",
+                    registry.requestMatchers("/create-account", "/static/**", "/google-user", "/add-user",
+                            "/resources/**",
                             "uploads/**", "/error").permitAll();
                     registry.anyRequest().authenticated();
                 })
