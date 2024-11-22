@@ -36,6 +36,9 @@
         background-color: #3a8ce9;
         border-radius: 12%;
       }
+      .view-btn {
+        background-color: #3a8ce9;
+      }
       .float-button {
         background-color: #3a8ce9;
         justify-content: end;
@@ -78,12 +81,14 @@
     >
       Add vehicle
     </a>
-    <div class="col-md-4">
-      <span th:text="${appUser.id}"></span>
-    </div>
+    <div class="col-md-4"></div>
     <div class="container my-5">
+      <h5>
+        Hi,
+        <span th:text="${appUser.firstName}" style="margin-bottom: 40px"></span>
+      </h6>
       <div class="row">
-        <!-- Card 1 -->
+        <!-- vehicle listing -->
         <div th:each="car : ${cars}" class="col-md-3 mb-4">
           <div class="card">
             <img
@@ -93,11 +98,8 @@
             />
             <div class="card-body">
               <p class="card-text">
+                <span th:text="${car.brand}" style="font-weight: bold"> </span>
                 <span
-                  th:text="${appUser.email}"
-                  style="font-weight: bold"
-                ></span
-                ><span
                   th:text="${car.price}"
                   style="float: right; margin-left: 4px"
                 ></span
@@ -123,12 +125,8 @@
                   style="float: right; margin-left: 4px"
                 ></span>
               </p>
-              <a
-                href="#!"
-                class="btn btn-primary"
-                style="margin-top: 14px"
-                data-mdb-ripple-init
-                >view</a
+              <br>
+              <a th:href="@{/cars/vehicle/{id}(id=${car.id})}"><button class="btn btn-primary view-btn">view</button></a
               ><i
                 class="bi bi-heart-fill"
                 style="color: red; float: right; margin-top: 14px"

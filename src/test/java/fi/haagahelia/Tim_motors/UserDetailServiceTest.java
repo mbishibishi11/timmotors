@@ -6,7 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import fi.haagahelia.tim_motors.service.UserDetailServiceImpl;
+import fi.haagahelia.tim_motors.UserDetailServiceImpl;
 
 @SpringBootTest
 public class UserDetailServiceTest {

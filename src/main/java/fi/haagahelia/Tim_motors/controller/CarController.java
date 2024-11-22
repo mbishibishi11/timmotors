@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,10 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import fi.haagahelia.tim_motors.AppUserDetails;
 import fi.haagahelia.tim_motors.domain.AppUser;
 import fi.haagahelia.tim_motors.domain.Car;
 import fi.haagahelia.tim_motors.repository.CarRepository;
-import fi.haagahelia.tim_motors.service.AppUserDetails;
 import fi.haagahelia.tim_motors.service.CarService;
 
 @Controller
@@ -66,7 +67,7 @@ public class CarController {
     @GetMapping("/cars")
     public String listVehicles(Model model, @AuthenticationPrincipal AppUserDetails userDetails) {
         if (userDetails == null) {
-            throw new IllegalStateException("Error");
+            throw new IllegalStateException(""); ////////////////// Add error page here
         }
 
         List<Car> cars = carRepository.findAll();
@@ -80,6 +81,16 @@ public class CarController {
         List<Car> cars = carRepository.findCarByUserId(id);
         model.addAttribute("cars", cars);
         return "my-listing";
+    }
+
+    @GetMapping("/cars/vehicle/{id}")
+    public String vehicleDetails(@PathVariable Long id, Model model,
+            @AuthenticationPrincipal AppUserDetails userDetails) {
+        Car car = carRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Car not found with ID: " + id));
+        model.addAttribute("car", car);
+        model.addAttribute("appUser", userDetails.getAppUser());
+        return "vehicle";
     }
 
     @GetMapping("/saved")
