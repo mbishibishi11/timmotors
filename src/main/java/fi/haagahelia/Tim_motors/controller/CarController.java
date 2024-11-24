@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -71,20 +73,25 @@ public class CarController {
 
     @GetMapping("/cars")
     public String listVehicles(Model model, @AuthenticationPrincipal AppUserDetails userDetails,
-            OAuth2AuthenticationToken oAuth2Token) {
+            Authentication authentication) {
 
-        AppUser appUser;
+        AppUser appUser = null;
 
-        if (userDetails != null) {
-            appUser = userDetails.getAppUser();
+        // Check if the user is authenticated via standard login
+        // (UsernamePasswordAuthenticationToken)
+        if (authentication instanceof UsernamePasswordAuthenticationToken) {
+            if (userDetails != null) {
+                appUser = userDetails.getAppUser();
+            }
         }
-        // Handle Google login
-        else if (oAuth2Token != null) {
+        // Check if the user is authenticated via OAuth2 (Google login)
+        else if (authentication instanceof OAuth2AuthenticationToken) {
+            OAuth2AuthenticationToken oAuth2Token = (OAuth2AuthenticationToken) authentication;
             String email = oAuth2Token.getPrincipal().getAttribute("email");
             appUser = appUserRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalStateException("User not found: " + email));
         }
-        // Else redirect to login
+        // Else, redirect to login page if no valid authentication is found
         else {
             return "redirect:/login";
         }

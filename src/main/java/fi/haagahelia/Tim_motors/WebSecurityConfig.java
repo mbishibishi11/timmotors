@@ -55,7 +55,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(registry -> {
                     registry.requestMatchers("/create-account", "/static/**", "/google-user", "/add-user",
                             "/resources/**",
-                            "uploads/**", "/error").permitAll();
+                            "uploads/**", "/error", "forgot-password", "reset-password").permitAll();
                     registry.anyRequest().authenticated();
                 })
 

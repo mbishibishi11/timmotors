@@ -1,7 +1,9 @@
 package fi.haagahelia.tim_motors.controller;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,7 +17,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import fi.haagahelia.tim_motors.domain.AppUser;
+import fi.haagahelia.tim_motors.domain.ResetPassword;
 import fi.haagahelia.tim_motors.repository.AppUserRepository;
+import fi.haagahelia.tim_motors.repository.ResetPasswordRepository;
+import fi.haagahelia.tim_motors.service.EmailService;
+import fi.haagahelia.tim_motors.service.PasswordResetService;
+
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -24,6 +31,15 @@ public class LoginController {
 
     @Autowired
     private AppUserRepository appUserRepository;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private ResetPasswordRepository resetPasswordRepository;
+
+    @Autowired
+    private PasswordResetService passwordResetService;
 
     @GetMapping({ "/", "/login" })
     public String login() {
@@ -90,8 +106,10 @@ public class LoginController {
         return "redirect:/login";
     }
 
-    @GetMapping("/reset-password")
+    @GetMapping("/forgot-password")
     public String passwordResetForm(Model model) {
+        AppUser appUser = new AppUser();
+        model.addAttribute("appUser", appUser);
         return "forgot-password";
     }
 
@@ -105,16 +123,81 @@ public class LoginController {
             return "forgot-password"; // Return to the forgot page
         }
 
-        AppUser appUser = userOptional.get();
-        String verificationToken = UUID.randomUUID().toString(); // Generate
-        return "/";
+        String verificationToken = UUID.randomUUID().toString(); // Generate a verification token
+
+        ResetPassword resetPassword = new ResetPassword(
+                email,
+                verificationToken,
+                LocalDateTime.now().plusMinutes(30) // Token validity
+        );
+
+        resetPasswordRepository.save(resetPassword); // Save email and token
+        emailService.sendResetPasswordEmail(email, verificationToken); // Email user
+
+        model.addAttribute("message", "Link to reset password sent to " + email);
+        return "/forgot-password";
     }
 
-    @GetMapping("/verification")
-    public String verification(Model model) {
-        AppUser appUser = new AppUser();
-        model.addAttribute("appUser", appUser);
-        return "forgot-password";
+    @GetMapping("/reset-password")
+    public String showResetPasswordForm(@RequestParam("token") String token, Model model) {
+        // Validate the token and check if it's valid
+        boolean isValid = passwordResetService.validateToken(token);
+
+        if (isValid) {
+            model.addAttribute("token", token);
+            model.addAttribute("appUser", new AppUser());
+            return "reset-password";
+        } else {
+            model.addAttribute("errorMessage", "Invalid link request new link.");
+            return "/forgot-password";
+        }
     }
+
+    @PostMapping("/reset-password")
+    public String ResetPassword(@RequestParam("token") String token, @RequestParam("email") String email,
+            @RequestParam("password") String password,
+            Model model) {
+        // Validate email for password reset
+        boolean isValidEmail = passwordResetService.resetPassword(token, password, email);
+
+        if (isValidEmail) {
+
+            model.addAttribute("message", "Password reset successful. Please log in with your new password.");
+            return "redirect:/login";
+        }
+
+        model.addAttribute("errorMessage", "Invalid email address or password reset failed.");
+        return "reset-password";
+    }
+
+    /*
+     * @GetMapping("/verification")
+     * public String verification(@RequestParam("token") String token, Model model)
+     * {
+     * // Check if the token exists and is valid
+     * //Optional<ResetPassword> tokenOptional =
+     * resetPasswordRepository.findBy(token);
+     * 
+     * //if (tokenOptional.isEmpty() ||
+     * tokenOptional.get().getExpirationTime().isBefore(LocalDateTime.now())) {
+     * //model.addAttribute("error", "Invalid or expired token");
+     * return "/verification"; // Return to forgot-password page with error
+     * }
+     * 
+     * // Token is valid, retrieve user by email
+     * ResetPassword resetToken = tokenOptional.get();
+     * Optional<AppUser> userOptional =
+     * appUserRepository.findByEmail(resetToken.getEmail());
+     * 
+     * if (userOptional.isEmpty()) {
+     * model.addAttribute("error", "User not found");
+     * return "forgot-password";
+     * }
+     * 
+     * // Add user to the model for password reset form
+     * model.addAttribute("appUser", userOptional.get());
+     * return "reset-password"; // Redirect to a password reset form
+     * }
+     */
 
 }

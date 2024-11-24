@@ -91,4 +91,9 @@ public class AppUser {
         this.savedCars = savedCars;
     }
 
+    public AppUser findByEmail(String userName) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findByEmail'");
+    }
+
 }

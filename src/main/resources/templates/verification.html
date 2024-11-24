@@ -57,12 +57,6 @@
   <body>
     <div class="container mt-3">
       <h2>Forgot password</h2>
-      <div th:if="${message}" class="alert alert-success mt-3">
-        <p th:text="${message}"></p>
-      </div>
-      <div th:if="${errorMessage}" class="alert alert-danger mt-3">
-        <p th:text="${errorMessage}"></p>
-      </div>
       <form th:action="@{/forgot-password}" method="post">
         <div class="form-group">
           <label for="email"> Email</label>
