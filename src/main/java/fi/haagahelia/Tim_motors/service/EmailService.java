@@ -15,7 +15,7 @@ public class EmailService {
 
     public void sendResetPasswordEmail(String toEmail, String token) {
         String subject = "Password Reset Request";
-        String resetLink = "http://localhost:8080/reset-password?token=" + token;
+        String resetLink = "https://tim-motors.onrender.com/reset-password?token=" + token;
         String message = "\n \nClick the link below to reset your password:\n" + resetLink;
 
         SimpleMailMessage email = new SimpleMailMessage();

@@ -169,34 +169,4 @@ public class LoginController {
         return "reset-password";
     }
 
-    /*
-     * @GetMapping("/verification")
-     * public String verification(@RequestParam("token") String token, Model model)
-     * {
-     * // Check if the token exists and is valid
-     * //Optional<ResetPassword> tokenOptional =
-     * resetPasswordRepository.findBy(token);
-     * 
-     * //if (tokenOptional.isEmpty() ||
-     * tokenOptional.get().getExpirationTime().isBefore(LocalDateTime.now())) {
-     * //model.addAttribute("error", "Invalid or expired token");
-     * return "/verification"; // Return to forgot-password page with error
-     * }
-     * 
-     * // Token is valid, retrieve user by email
-     * ResetPassword resetToken = tokenOptional.get();
-     * Optional<AppUser> userOptional =
-     * appUserRepository.findByEmail(resetToken.getEmail());
-     * 
-     * if (userOptional.isEmpty()) {
-     * model.addAttribute("error", "User not found");
-     * return "forgot-password";
-     * }
-     * 
-     * // Add user to the model for password reset form
-     * model.addAttribute("appUser", userOptional.get());
-     * return "reset-password"; // Redirect to a password reset form
-     * }
-     */
-
 }
