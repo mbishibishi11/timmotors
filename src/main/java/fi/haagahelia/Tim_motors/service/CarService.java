@@ -18,7 +18,7 @@ public class CarService {
     @Autowired
     private CarRepository carRepository;
 
-    private final String uploadDirectory = "src/main/resources/static/uploads/";
+    private final String uploadDirectory = Paths.get("").toAbsolutePath().toString() + "/uploads/";
 
     public String saveFile(MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) {
