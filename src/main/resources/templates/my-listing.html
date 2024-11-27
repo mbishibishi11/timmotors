@@ -36,21 +36,40 @@
         background-color: #3a8ce9;
         border-radius: 12%;
       }
+      a {
+        text-decoration: none;
+        color: #fff;
+      }
+      .url-btn {
+        margin-right: 20px !important;
+      }
+      .last-child {
+        margin-right: 20px;
+        background-color: #fb4261;
+        border: solid 1px #fb4261;
+      }
+      .last-child:hover {
+        background-color: red;
+        border: solid 1px red;
+      }
     </style>
   </head>
   <body>
     <ul class="nav justify-content-center">
-      <li class="nav-item">
-        <a class="nav-link bi-car-front-fill" href="/cars"> All</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link bi-card-checklist active" href="/my-listing">
-          My listing</a
+      <button class="btn btn-primary url-btn bi-car-front-fill">
+        <a th:href="@{/cars}"> All </a>
+      </button>
+      <button class="btn btn-primary url-btn bi-car-front-fill">
+        <a th:href="@{/my-listing/{id}(id=${appUser.id})}"> My listing</a>
+      </button>
+      <form th:action="@{/logout}" method="post">
+        <button
+          type="submit"
+          class="btn btn-primary bi-box-arrow-right last-child"
         >
-      </li>
-      <li class="nav-item">
-        <a class="nav-link bi-cloud-download-fill" href="saved"> Saved</a>
-      </li>
+          Logout
+        </button>
+      </form>
     </ul>
 
     <!--Own listing-->
@@ -91,14 +110,14 @@
                 ></span>
               </p>
               <a
-                href="#!"
+                th:href="@{/cars/vehicle/{id}(id=${car.id})}"
                 class="btn btn-primary"
                 style="margin-top: 14px"
                 data-mdb-ripple-init
                 >view</a
               ><i
                 class="bi bi-heart-fill"
-                style="color: red; float: right; margin-top: 14px"
+                style="color: #fb4261; float: right; margin-top: 14px"
               ></i>
             </div>
           </div>

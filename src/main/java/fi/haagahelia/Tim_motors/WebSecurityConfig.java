@@ -58,6 +58,12 @@ public class WebSecurityConfig {
                             "uploads/**", "/error", "forgot-password", "reset-password").permitAll();
                     registry.anyRequest().authenticated();
                 })
+                .logout(logout -> {
+                    logout
+                            .logoutUrl("/logout")
+                            .logoutSuccessUrl("/login?logout")
+                            .invalidateHttpSession(true);
+                })
 
                 .build();
     }

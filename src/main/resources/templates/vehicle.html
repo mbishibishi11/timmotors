@@ -31,10 +31,7 @@
       }
       .nav {
         margin-top: 30px;
-      }
-      .active {
-        background-color: #3a8ce9;
-        border-radius: 12%;
+        margin-bottom: 30px;
       }
       .image-container {
         height: 400px;
@@ -55,6 +52,23 @@
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         border: 1px solid #494646;
       }
+      a {
+        text-decoration: none;
+        color: #fff;
+      }
+      .url-btn {
+        margin-right: 20px !important;
+      }
+      .last-child {
+        margin-right: 20px;
+        background-color: #fb4261;
+        border: solid 1px #fb4261;
+      }
+      .last-child:hover {
+        background-color: red;
+        border: solid 1px red;
+      }
+
       @media (max-width: 768px) {
         .image-container {
           height: 250px;
@@ -64,20 +78,28 @@
   </head>
   <body>
     <ul class="nav justify-content-center">
-      <button class="btn btn-primary bi-car-front-fill active">
+      <button class="btn btn-primary url-btn bi-car-front-fill active">
         <a href="/cars"> All</a>
       </button>
-      <button class="btn btn-primary bi-car-front-fill">
+      <button class="btn btn-primary url-btn bi-car-front-fill">
         <a th:href="@{/my-listing/{id}(id=${appUser.id})}"> My listing</a>
       </button>
-      <button class="btn btn-primary bi-cloud-download-fill">
-        <a href="saved"> Saved</a>
-      </button>
+      <form th:action="@{/logout}" method="post">
+        <button
+          type="submit"
+          class="btn btn-primary bi-box-arrow-right last-child"
+        >
+          Logout
+        </button>
+      </form>
     </ul>
 
-    <div class="container py-5">
-      <div class="row justify-content-center">
-        <div class="col-lg-10 car-details-container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10 car-details-container">
+        <div class="container py-5">
+          <div th:if="${success}" class="alert alert-success mt-3">
+            <p th:text="${success}"></p>
+          </div>
           <div class="row g-0">
             <!-- Left Side: Car Image -->
             <div class="col-md-6 p-0">
@@ -141,7 +163,7 @@
               </div>
 
               <div class="mt-4">
-                <form action="" method="post" object="">
+                <form th:action="@{/emailSeller}" method="post">
                   <div class="mb-3">
                     <label for="inquiryMessage" class="form-label"
                       >Your Message</label
@@ -149,18 +171,23 @@
                     <textarea
                       class="form-control"
                       id="inquiryMessage"
-                      field=""
+                      name="inquiryMessage"
                       rows="4"
                       placeholder="Write your inquiry here..."
+                      required
                     ></textarea>
                   </div>
                   <input
                     type="hidden"
-                    class="form-control"
-                    id="contactEmail"
-                    field=""
+                    name="BuyerEmail"
+                    th:value="${appUser.email}"
                   />
-                  <input type="hidden" field="" th:value="${car.id}" />
+                  <input
+                    type="hidden"
+                    name="sellerId"
+                    th:value="${car.appUser.id}"
+                  />
+                  <input type="hidden" name="carId" th:value="${car.id}" />
                   <button type="submit" class="btn btn-primary w-100">
                     Email Seller
                   </button>

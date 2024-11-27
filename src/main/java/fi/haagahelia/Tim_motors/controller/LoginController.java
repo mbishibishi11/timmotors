@@ -23,7 +23,6 @@ import fi.haagahelia.tim_motors.repository.ResetPasswordRepository;
 import fi.haagahelia.tim_motors.service.EmailService;
 import fi.haagahelia.tim_motors.service.PasswordResetService;
 
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller

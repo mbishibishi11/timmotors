@@ -47,7 +47,8 @@ public class CarController {
     @PostMapping("/save-vehicle")
     public String saveVehicleInfo(Car car,
             @RequestParam("imageFile") MultipartFile imageFile, Model model,
-            @AuthenticationPrincipal AppUserDetails userDetails) {
+            @AuthenticationPrincipal AppUserDetails userDetails,
+            Authentication authentication) {
         try {
             if (imageFile.isEmpty()) {
                 model.addAttribute("error", "Please select an image file");
@@ -59,7 +60,25 @@ public class CarController {
             car.setUrl(imageUrl);
 
             // Get user id to be assossiated with post
-            AppUser appUser = userDetails.getAppUser();
+            AppUser appUser = null;
+
+            // Check if the user is authenticated via standard login
+            if (authentication instanceof UsernamePasswordAuthenticationToken) {
+                if (userDetails != null) {
+                    appUser = userDetails.getAppUser();
+                }
+            }
+            // Check if the user is authenticated via OAuth2 (Google login)
+            else if (authentication instanceof OAuth2AuthenticationToken) {
+                OAuth2AuthenticationToken oAuth2Token = (OAuth2AuthenticationToken) authentication;
+                String email = oAuth2Token.getPrincipal().getAttribute("email");
+                appUser = appUserRepository.findByEmail(email)
+                        .orElseThrow(() -> new IllegalStateException("User not found: " + email));
+            }
+            // Else, redirect to login page if no valid authentication is found
+            else {
+                return "redirect:/login";
+            }
             car.setAppUser(appUser);
             carRepository.save(car);
 
@@ -78,7 +97,6 @@ public class CarController {
         AppUser appUser = null;
 
         // Check if the user is authenticated via standard login
-        // (UsernamePasswordAuthenticationToken)
         if (authentication instanceof UsernamePasswordAuthenticationToken) {
             if (userDetails != null) {
                 appUser = userDetails.getAppUser();
@@ -105,24 +123,58 @@ public class CarController {
     }
 
     @GetMapping("/my-listing/{id}")
-    public String viewListing(@PathVariable Long id, Model model) {
+    public String viewListing(@PathVariable Long id, Model model, @AuthenticationPrincipal AppUserDetails userDetails,
+            Authentication authentication) {
         List<Car> cars = carRepository.findCarByUserId(id);
+
+        AppUser appUser = null;
+
+        // Check if the user is authenticated via standard login
+        if (authentication instanceof UsernamePasswordAuthenticationToken) {
+            if (userDetails != null) {
+                appUser = userDetails.getAppUser();
+            }
+        }
+        // Check if the user is authenticated via OAuth2 (Google login)
+        else if (authentication instanceof OAuth2AuthenticationToken) {
+            OAuth2AuthenticationToken oAuth2Token = (OAuth2AuthenticationToken) authentication;
+            String email = oAuth2Token.getPrincipal().getAttribute("email");
+            appUser = appUserRepository.findByEmail(email)
+                    .orElseThrow(() -> new IllegalStateException("User not found: " + email));
+        }
+        // Else, redirect to login page if no valid authentication is found
+        else {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("appUser", appUser);
         model.addAttribute("cars", cars);
         return "my-listing";
     }
 
     @GetMapping("/cars/vehicle/{id}")
     public String vehicleDetails(@PathVariable Long id, Model model,
-            @AuthenticationPrincipal AppUserDetails userDetails, OAuth2AuthenticationToken oAuth2Token) {
+            @AuthenticationPrincipal AppUserDetails userDetails, Authentication authentication) {
 
-        AppUser appUser;
-        // Retrieve user details
-        if (userDetails != null) {
-            appUser = userDetails.getAppUser();
+        AppUser appUser = null;
+
+        // Check if the user is authenticated via standard login
+        if (authentication instanceof UsernamePasswordAuthenticationToken) {
+            if (userDetails != null) {
+                appUser = userDetails.getAppUser();
+            }
         }
-        String email = oAuth2Token.getPrincipal().getAttribute("email");
-        appUser = appUserRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("User not found: " + email));
+        // Check if the user is authenticated via OAuth2 (Google login)
+        else if (authentication instanceof OAuth2AuthenticationToken) {
+            OAuth2AuthenticationToken oAuth2Token = (OAuth2AuthenticationToken) authentication;
+            String email = oAuth2Token.getPrincipal().getAttribute("email");
+            appUser = appUserRepository.findByEmail(email)
+                    .orElseThrow(() -> new IllegalStateException("User not found: " + email));
+        }
+        // Else, redirect to login page if no valid authentication is found
+        else {
+            return "redirect:/login";
+        }
         // Retrieve car info
         Car car = carRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Car not found with ID: " + id));

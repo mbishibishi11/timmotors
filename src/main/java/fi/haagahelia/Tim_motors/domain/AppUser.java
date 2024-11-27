@@ -28,9 +28,6 @@ public class AppUser {
 
     private String role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<SavedCar> savedCars = new ArrayList<>();
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "appUser")
     private List<Car> cars = new ArrayList<>();
 
@@ -81,19 +78,6 @@ public class AppUser {
 
     public void setRole(String role) {
         this.role = role;
-    }
-
-    public List<SavedCar> getSavedCars() {
-        return savedCars;
-    }
-
-    public void setSavedCars(List<SavedCar> savedCars) {
-        this.savedCars = savedCars;
-    }
-
-    public AppUser findByEmail(String userName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findByEmail'");
     }
 
 }
